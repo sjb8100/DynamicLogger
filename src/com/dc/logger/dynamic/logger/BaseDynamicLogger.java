@@ -17,6 +17,7 @@ import com.dc.logger.dynamic.controller.IDynamicLoggerController;
  * @author Daemon
  *
  */
+
 public class BaseDynamicLogger implements IDynamicLogger {
 	
 	protected final IDynamicLoggerController controller;
