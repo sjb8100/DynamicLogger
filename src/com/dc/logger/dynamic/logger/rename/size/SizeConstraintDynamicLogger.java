@@ -5,13 +5,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.dc.logger.dynamic.controller.IDynamicLoggerController;
 import com.dc.logger.dynamic.logger.rename.NameChangeDynamicLogger;
 
 /**
- * 注意：如果是重要的日志，请不要使用缓存 或者 该日志不允许关闭，
- * 因为BufferedOutputStream即使被关闭也可以write数据，所以有几率部分日志没有写到文件中
- * （后面会对此加以改善）
+ * 当logger被关闭时，再调用log方法将会直接写入（不管useBuffer取值）到文件中（从新打开文件 写入 并关闭）
  * 
  * @author Daemon
  *
@@ -24,11 +21,9 @@ public class SizeConstraintDynamicLogger extends NameChangeDynamicLogger {
 	protected int index = 0;
 	
 	/**
-	 * 注意：如果是重要的日志，请不要使用缓存 或者 该日志不允许关闭，
-	 * 因为BufferedOutputStream即使被关闭也可以write数据，所以有几率部分日志没有写到文件中
-	 * （后面会对此加以改善）
+	 * 当logger被关闭时，再调用log方法将会直接写入（不管useBuffer取值）到文件中（从新打开文件 写入 并关闭）
 	 */
-	public SizeConstraintDynamicLogger(IDynamicLoggerController controller,
+	public SizeConstraintDynamicLogger(
 			String basePath, String targetName, String filenameExtension,
 			boolean useBuffer, int bufferSize, boolean canClose,
 			int maxIdleTime, boolean useMultilayerTargetNamePath,
@@ -36,7 +31,7 @@ public class SizeConstraintDynamicLogger extends NameChangeDynamicLogger {
 			String multilayerTargetNamePathSuffix, int eachLayerLength,
 			int maxSize) {
 		
-		super(controller, basePath, targetName, filenameExtension, useBuffer,
+		super(basePath, targetName, filenameExtension, useBuffer,
 				bufferSize, canClose, maxIdleTime, useMultilayerTargetNamePath,
 				multilayerTargetNamePathPrefix, multilayerTargetNamePathSuffix,
 				eachLayerLength);
@@ -76,7 +71,7 @@ public class SizeConstraintDynamicLogger extends NameChangeDynamicLogger {
 		
 		super.beforeWrite(msg, datas);
 		
-		if( sizeCountter.addAndGet(msg.length()) > maxSize ) {
+		if( sizeCountter.get() > maxSize ) {
 			
 			changeName(msg, datas);
 		}
@@ -93,11 +88,10 @@ public class SizeConstraintDynamicLogger extends NameChangeDynamicLogger {
 				
 				OutputStream oldOut = this.out;
 				
-				long fileLenth = resetIndex(datas.length);
-				
-				sizeCountter.set(fileLenth + datas.length);
-				
 				this.start();
+				
+				long fileLenth = resetIndex(datas.length);
+				sizeCountter.set(fileLenth + datas.length);
 				
 				try {
 					oldOut.flush();

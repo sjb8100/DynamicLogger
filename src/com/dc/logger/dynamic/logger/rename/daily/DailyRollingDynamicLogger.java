@@ -6,13 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import com.dc.logger.dynamic.controller.IDynamicLoggerController;
 import com.dc.logger.dynamic.logger.rename.NameChangeDynamicLogger;
 
 /**
- * 注意：如果是重要的日志，请不要使用缓存 或者 该日志不允许关闭，
- * 因为BufferedOutputStream即使被关闭也可以write数据，所以有几率部分日志没有写到文件中
- * （后面会对此加以改善）
+ * 当logger被关闭时，再调用log方法将会直接写入（不管useBuffer取值）到文件中（从新打开文件 写入 并关闭）
  * 
  * @author Daemon
  *
@@ -24,11 +21,9 @@ public class DailyRollingDynamicLogger extends NameChangeDynamicLogger {
 	protected final TimeZone timeZone;
 	
 	/**
-	 * 注意：如果是重要的日志，请不要使用缓存 或者 该日志不允许关闭，
-	 * 因为BufferedOutputStream即使被关闭也可以write数据，所以有几率部分日志没有写到文件中
-	 * （后面会对此加以改善）
+	 * 当logger被关闭时，再调用log方法将会直接写入（不管useBuffer取值）到文件中（从新打开文件 写入 并关闭）
 	 */
-	public DailyRollingDynamicLogger(IDynamicLoggerController controller,
+	public DailyRollingDynamicLogger(
 			String basePath, String targetName, String filenameExtension,
 			boolean useBuffer, int bufferSize, boolean canClose,
 			int maxIdleTime, boolean useMultilayerTargetNamePath,
@@ -36,7 +31,7 @@ public class DailyRollingDynamicLogger extends NameChangeDynamicLogger {
 			String multilayerTargetNamePathSuffix, int eachLayerLength,
 			TimeZone timeZone) {
 		
-		super(controller, basePath, targetName, filenameExtension, useBuffer,
+		super(basePath, targetName, filenameExtension, useBuffer,
 				bufferSize, canClose, maxIdleTime, useMultilayerTargetNamePath,
 				multilayerTargetNamePathPrefix, multilayerTargetNamePathSuffix,
 				eachLayerLength);
@@ -95,8 +90,8 @@ public class DailyRollingDynamicLogger extends NameChangeDynamicLogger {
 				
 				OutputStream oldOut = this.out;
 				
-				resetNameNeedChangeTime();
 				this.start();
+				resetNameNeedChangeTime();
 				
 				try {
 					oldOut.flush();

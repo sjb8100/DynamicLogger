@@ -136,9 +136,9 @@ public class DynamicLoggerController implements IDynamicLoggerController, ICheck
 	public IDynamicLogger getLogger(String targetName) {
 
 		IDynamicLogger logger = targetNameMapLogger.get(targetName);
-		if( logger == null ) {
+		if( logger == null || logger.isClose() ) {
 			
-			logger = loggerFactory.getNewLogger(this, targetName);
+			logger = loggerFactory.getNewLogger(targetName);
 			
 			logger.start();
 			
@@ -192,15 +192,6 @@ public class DynamicLoggerController implements IDynamicLoggerController, ICheck
 			logger.flush();
 	}
 	
-	public void reLoggerWhenClose(String msg, String basePath, String targetName,
-			String filenameExtension, boolean useBuffer, int bufferSize,
-			boolean useMultilayerTargetNamePath,
-			String multilayerTargetNamePathPrefix,
-			String multilayerTargetNamePathSuffix, int eachLayerLength) {
-		
-		this.log(targetName, msg);
-	}
-
 	public int getActiveCount() {
 		
 		return targetNameMapLogger.size();

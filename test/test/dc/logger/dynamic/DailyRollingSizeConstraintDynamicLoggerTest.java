@@ -4,7 +4,6 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import com.dc.logger.dynamic.controller.DynamicLoggerController;
-import com.dc.logger.dynamic.controller.IDynamicLoggerController;
 import com.dc.logger.dynamic.controller.factory.BaseLoggerFactory;
 import com.dc.logger.dynamic.logger.IDynamicLogger;
 import com.dc.logger.dynamic.logger.rename.daily.DailyRollingSizeConstraintDynamicLogger;
@@ -63,9 +62,9 @@ public class DailyRollingSizeConstraintDynamicLoggerTest extends BaseLoggerFacto
 	}
 	
 	@Override
-	public IDynamicLogger getNewLogger(IDynamicLoggerController controller, String targetName) {
+	public IDynamicLogger getNewLogger(String targetName) {
 		
-		return new DailyRollingSizeConstraintDynamicLogger(controller, basePath, targetName, filenameExtension, 
+		return new DailyRollingSizeConstraintDynamicLogger(basePath, targetName, filenameExtension, 
 				useBuffer, bufferSize, canClose, maxIdleTime, useMultilayerTargetNamePath, multilayerTargetNamePathPrefix, multilayerTargetNamePathSuffix, eachLayerLength,
 				TimeZone.getDefault(), 10240);
 	}

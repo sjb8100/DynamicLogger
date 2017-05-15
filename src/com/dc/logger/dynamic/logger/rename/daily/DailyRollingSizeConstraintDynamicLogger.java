@@ -6,12 +6,8 @@ import java.io.OutputStream;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.dc.logger.dynamic.controller.IDynamicLoggerController;
-
 /**
- * 注意：如果是重要的日志，请不要使用缓存 或者 该日志不允许关闭，
- * 因为BufferedOutputStream即使被关闭也可以write数据，所以有几率部分日志没有写到文件中
- * （后面会对此加以改善）
+ * 当logger被关闭时，再调用log方法将会直接写入（不管useBuffer取值）到文件中（从新打开文件 写入 并关闭）
  * 
  * @author Daemon
  *
@@ -24,11 +20,9 @@ public class DailyRollingSizeConstraintDynamicLogger extends DailyRollingDynamic
 	protected int index = 0;
 	
 	/**
-	 * 注意：如果是重要的日志，请不要使用缓存 或者 该日志不允许关闭，
-	 * 因为BufferedOutputStream即使被关闭也可以write数据，所以有几率部分日志没有写到文件中
-	 * （后面会对此加以改善）
+	 * 当logger被关闭时，再调用log方法将会直接写入（不管useBuffer取值）到文件中（从新打开文件 写入 并关闭）
 	 */
-	public DailyRollingSizeConstraintDynamicLogger(IDynamicLoggerController controller,
+	public DailyRollingSizeConstraintDynamicLogger(
 			String basePath, String targetName, String filenameExtension,
 			boolean useBuffer, int bufferSize, boolean canClose,
 			int maxIdleTime, boolean useMultilayerTargetNamePath,
@@ -36,7 +30,7 @@ public class DailyRollingSizeConstraintDynamicLogger extends DailyRollingDynamic
 			String multilayerTargetNamePathSuffix, int eachLayerLength,
 			TimeZone timeZone, int maxSize) {
 		
-		super(controller, basePath, targetName, filenameExtension, useBuffer,
+		super(basePath, targetName, filenameExtension, useBuffer,
 				bufferSize, canClose, maxIdleTime, useMultilayerTargetNamePath,
 				multilayerTargetNamePathPrefix, multilayerTargetNamePathSuffix,
 				eachLayerLength, timeZone);
@@ -95,10 +89,10 @@ public class DailyRollingSizeConstraintDynamicLogger extends DailyRollingDynamic
 				
 				OutputStream oldOut = this.out;
 				
+				this.start();
+				
 				long fileLenth = resetIndex(datas.length);
 				sizeCountter.set(fileLenth + datas.length);
-				
-				this.start();
 				
 				try {
 					oldOut.flush();

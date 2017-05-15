@@ -1,5 +1,7 @@
 package com.dc.logger.dynamic.logger;
 
+import java.io.IOException;
+
 public interface IDynamicLogger {
 	
 	String getTargetName();
@@ -8,6 +10,8 @@ public interface IDynamicLogger {
 	
 	
 	void start();
+	
+	void startAndLogAndClose(byte[] datas) throws IOException;
 	
 	boolean closeAble();
 	

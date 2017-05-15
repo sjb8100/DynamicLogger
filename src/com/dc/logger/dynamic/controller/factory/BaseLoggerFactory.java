@@ -1,6 +1,5 @@
 package com.dc.logger.dynamic.controller.factory;
 
-import com.dc.logger.dynamic.controller.IDynamicLoggerController;
 import com.dc.logger.dynamic.logger.BaseDynamicLogger;
 import com.dc.logger.dynamic.logger.IDynamicLogger;
 
@@ -59,9 +58,9 @@ public class BaseLoggerFactory implements ILoggerFactory {
 		
 	}
 
-	public IDynamicLogger getNewLogger(IDynamicLoggerController controller, String targetName) {
+	public IDynamicLogger getNewLogger(String targetName) {
 		
-		return new BaseDynamicLogger(controller, basePath, targetName, filenameExtension, 
+		return new BaseDynamicLogger(basePath, targetName, filenameExtension, 
 				useBuffer, bufferSize, canClose, maxIdleTime, useMultilayerTargetNamePath, multilayerTargetNamePathPrefix, multilayerTargetNamePathSuffix, eachLayerLength);
 	}
 }

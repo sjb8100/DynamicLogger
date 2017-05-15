@@ -15,16 +15,6 @@ public interface IDynamicLoggerController {
 	
 	void flush(String targetName);
 	
-	void reLoggerWhenClose( String msg, 
-			
-			String basePath, String targetName, String filenameExtension,
-			
-			boolean useBuffer, int bufferSize,
-			
-			boolean useMultilayerTargetNamePath,
-			String multilayerTargetNamePathPrefix,
-			String multilayerTargetNamePathSuffix, int eachLayerLength );
-
 	void close(String targetName);
 
 	void close(String targetName, IDynamicLogger dynamicLogger);
